@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "vercel:prod": "vercel --prod --confirm"
   },
   "dependencies": {
     "next": "13.4.10",

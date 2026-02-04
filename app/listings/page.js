@@ -117,7 +117,7 @@ export default function ListingsPage() {
         <>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24}}>
             {filtered.map((item, i) => (
-              <article key={item._id} style={{background: '#fff', borderRadius: 16, padding: 22, boxShadow: '0 10px 30px rgba(2,6,23,0.06)', transform: i === 1 ? 'rotate(-3deg)' : i === 2 ? 'rotate(2deg)' : 'none'}}>
+              <article key={item._id} style={{background: '#fff', borderRadius: 16, padding: 22, boxShadow: '0 10px 30px rgba(2,6,23,0.06)', transform: `rotate(${((Math.random() * 8) - 4).toFixed(2)}deg)`}}>
                 <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
                   <div style={{width:56,height:56,borderRadius:999,display:'flex',alignItems:'center',justifyContent:'center',background:'#eef2ff',fontWeight:700,color:'#0f172a'}}>{(item.name || 'A').split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
                   <div>

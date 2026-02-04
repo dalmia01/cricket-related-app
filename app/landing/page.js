@@ -3,9 +3,25 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import LocationSelector from '../components/LocationSelector'
 
-function SignatureCanvas({ onChange }) {
+import { forwardRef, useImperativeHandle } from 'react'
+
+const SignatureCanvas = forwardRef(function SignatureCanvas({ onChange }, ref) {
   const canvasRef = useRef(null)
   const drawing = useRef(false)
+  const hasStroke = useRef(false)
+
+  useImperativeHandle(ref, () => ({
+    clear: () => {
+      const c = canvasRef.current
+      if (!c) return
+      const ctx = c.getContext('2d')
+      ctx.clearRect(0, 0, c.width, c.height)
+      ctx.fillStyle = '#fff'
+      ctx.fillRect(0, 0, c.width, c.height)
+      hasStroke.current = false
+      onChange && onChange(null)
+    }
+  }))
 
   useEffect(() => {
     const c = canvasRef.current
@@ -27,11 +43,17 @@ function SignatureCanvas({ onChange }) {
       const rect = c.getBoundingClientRect()
       ctx.lineTo((e.clientX - rect.left) * (c.width / rect.width), (e.clientY - rect.top) * (c.height / rect.height))
       ctx.stroke()
+      hasStroke.current = true
       onChange && onChange(c.toDataURL())
     }
     function pointerUp() {
       drawing.current = false
-      onChange && onChange(c.toDataURL())
+      // only report a signature if the user actually drew
+      if (hasStroke.current) {
+        onChange && onChange(c.toDataURL())
+      } else {
+        onChange && onChange(null)
+      }
     }
 
     c.addEventListener('pointerdown', pointerDown)
@@ -46,7 +68,7 @@ function SignatureCanvas({ onChange }) {
   }, [onChange])
 
   return <canvas ref={canvasRef} width={800} height={200} className="signature-canvas" />
-}
+})
 
 export default function LandingPage() {
   const router = useRouter()
@@ -55,8 +77,13 @@ export default function LandingPage() {
   const [selectedLocation, setSelectedLocation] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState('')
   const [signature, setSignature] = useState(null)
+  const signatureRef = useRef(null)
   const [message, setMessage] = useState('Great service')
   const [loading, setLoading] = useState(false)
+  const [toastVisible, setToastVisible] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+  const toastTimerRef = useRef(null)
+  const TOAST_MS = 2000
 
   const messages = ['Great service', 'Thank you!', 'Amazing!', 'Proud supporter', 'Best wishes']
 
@@ -83,7 +110,18 @@ export default function LandingPage() {
         localStorage.removeItem('visitor.district')
         localStorage.removeItem('visitor.location')
       } catch (e) {}
-      router.push('/listings')
+      // show a toast and redirect to base signup path after it disappears
+      setToastMessage('Saved successfully')
+      setToastVisible(true)
+      // clear signature UI
+      try { signatureRef.current && signatureRef.current.clear() } catch (e) {}
+      setSignature(null)
+      // start redirect timer
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+      toastTimerRef.current = setTimeout(() => {
+        setToastVisible(false)
+        router.push('/')
+      }, TOAST_MS)
     } catch (err) {
       alert('Error saving: ' + err.message)
     } finally {
@@ -128,15 +166,37 @@ export default function LandingPage() {
       <div className="card">
         <p><strong>{name}</strong> — {phone} — {selectedDistrict ? `${selectedDistrict} / ${selectedLocation}` : selectedLocation}</p>
 
-        <label>Digital signature</label>
-        <SignatureCanvas onChange={setSignature} />
+        <label>Digital signature { !signature && <span style={{color:'red',marginLeft:8,fontSize:12}}>* required</span> }</label>
+        <SignatureCanvas ref={signatureRef} onChange={setSignature} />
+        {!signature && (
+          <div style={{color:'red',fontSize:13,marginTop:8}}>Signature required</div>
+        )}
+        <div style={{display:'flex',gap:8,marginTop:8}}>
+          <button onClick={() => { try { signatureRef.current && signatureRef.current.clear(); setSignature(null) } catch(e){} }} className="btn">Clear signature</button>
+        </div>
 
         <label>Message</label>
         <select value={message} onChange={e => setMessage(e.target.value)}>
           {messages.map(m => <option key={m} value={m}>{m}</option>)}
         </select>
 
-        <button onClick={handleProceed} className="btn" disabled={loading}>{loading ? 'Saving...' : 'Proceed'}</button>
+        <button onClick={handleProceed} className="btn" disabled={loading || !signature}>{loading ? 'Saving...' : 'Proceed'}</button>
+        {toastVisible && (
+          <div className="app-toast" data-anim-duration={TOAST_MS} role="status" aria-live="polite">
+            <div className="app-toast__card" onClick={() => { // click to dismiss and go home
+                if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+                setToastVisible(false)
+                router.push('/')
+              }}>
+              <div className="app-toast__icon">✔</div>
+              <div style={{flex:1}}>
+                <div className="app-toast__message">{toastMessage}</div>
+                <div className="app-toast__sub">Redirecting to signup...</div>
+              </div>
+            </div>
+            <div className="app-toast__progress" style={{animationDuration: `${TOAST_MS}ms`}} />
+          </div>
+        )}
       </div>
     </main>
   )
