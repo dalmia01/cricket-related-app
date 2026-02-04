@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "vercel:prod": "vercel --prod --confirm"
+    "vercel:prod": "vercel --prod --yes"
   },
   "dependencies": {
     "next": "13.4.10",
