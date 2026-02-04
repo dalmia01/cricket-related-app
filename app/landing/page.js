@@ -163,7 +163,7 @@ export default function LandingPage() {
   return (
     <main className="container">
       <h1>Landing</h1>
-      <div className="card">
+      <div className="mt-2 card">
         <p><strong>{name}</strong> — {phone} — {selectedDistrict ? `${selectedDistrict} / ${selectedLocation}` : selectedLocation}</p>
 
         <label>Digital signature { !signature && <span style={{color:'red',marginLeft:8,fontSize:12}}>* required</span> }</label>

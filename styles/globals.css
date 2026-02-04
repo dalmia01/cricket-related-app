@@ -1,6 +1,7 @@
 
 :root{--bg:#f6f9fc;--card:#ffffff;--accent:#ff7a59;--accent-2:#7c3aed;--muted:#6b7280;--text:#0f1724}
-html,body,#__next{height:100%}
+*{box-sizing:border-box; margin: 0;padding: 0;}
+html,body,#__next{margin: 0;padding: 0;}
 html, body {
   /* Ensure background layers are applied to the root and span full document height */
   background:
@@ -14,8 +15,9 @@ html, body {
   /* Keep gradient image positioned for long pages and avoid seams */
   background-attachment: fixed, fixed, fixed, fixed;
 }
-body{margin:0;font-family:Inter,system-ui,Arial, sans-serif;color:var(--text);min-height:100vh}
+body{margin:0;font-family:Inter,system-ui,Arial, sans-serif;color:var(--text);}
 .container{max-width:980px;margin:40px auto;padding:0 20px}
+form.card{margin-top: 10px;}
 .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 28px rgba(15,23,42,0.06);display:flex;flex-direction:column;gap:10px;color:var(--text)}
 label{font-weight:600;color:var(--muted)}
 .btn{background:linear-gradient(90deg,var(--accent),#3dd6e6);color:#fff;padding:10px 16px;border:none;border-radius:10px;cursor:pointer;font-weight:700}
@@ -93,5 +95,7 @@ input,select{padding:10px;border:1px solid rgba(15,23,42,0.06);border-radius:10p
 @keyframes toast-progress-shrink{from{width:100%}to{width:0%}}
 
 .app-toast[data-anim-duration] .app-toast__progress{animation-name:toast-progress-shrink}
+
+.mt-2{margin-top:8px}
 
 
