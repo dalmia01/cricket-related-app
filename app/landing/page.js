@@ -9,6 +9,7 @@ const SignatureCanvas = forwardRef(function SignatureCanvas({ onChange }, ref) {
   const canvasRef = useRef(null)
   const drawing = useRef(false)
   const hasStroke = useRef(false)
+  const pointerIdRef = useRef(null)
 
   useImperativeHandle(ref, () => ({
     clear: () => {
@@ -33,21 +34,29 @@ const SignatureCanvas = forwardRef(function SignatureCanvas({ onChange }, ref) {
     ctx.fillRect(0, 0, c.width, c.height)
 
     function pointerDown(e) {
+      // prevent default touch behavior (scrolling)
+      e.preventDefault && e.preventDefault()
       drawing.current = true
+      pointerIdRef.current = e.pointerId
+      try { c.setPointerCapture && c.setPointerCapture(e.pointerId) } catch (err) {}
       const rect = c.getBoundingClientRect()
       ctx.beginPath()
       ctx.moveTo((e.clientX - rect.left) * (c.width / rect.width), (e.clientY - rect.top) * (c.height / rect.height))
     }
     function pointerMove(e) {
       if (!drawing.current) return
+      e.preventDefault && e.preventDefault()
       const rect = c.getBoundingClientRect()
       ctx.lineTo((e.clientX - rect.left) * (c.width / rect.width), (e.clientY - rect.top) * (c.height / rect.height))
       ctx.stroke()
       hasStroke.current = true
       onChange && onChange(c.toDataURL())
     }
-    function pointerUp() {
+    function pointerUp(e) {
+      e.preventDefault && e.preventDefault()
       drawing.current = false
+      try { if (pointerIdRef.current) c.releasePointerCapture && c.releasePointerCapture(pointerIdRef.current) } catch (err) {}
+      pointerIdRef.current = null
       // only report a signature if the user actually drew
       if (hasStroke.current) {
         onChange && onChange(c.toDataURL())
