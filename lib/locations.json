@@ -1,0 +1,26 @@
+[
+  { "district": "Greater Noida", "location": "Sikandrabad" },
+  { "district": "Greater Noida", "location": "Sahapur Maidan, Degree College" },
+  { "district": "Greater Noida", "location": "Dadri Village - Lohrly" },
+  { "district": "Greater Noida", "location": "Jewar - Gothri, inter College Maidan" },
+
+  { "district": "Hapur", "location": "Chitoli Ground, Hapur-B'sahar Rd" },
+  { "district": "Hapur", "location": "Pilakhuwan/Dhaulauna" },
+  { "district": "Hapur", "location": "Garh" },
+
+  { "district": "Baghpat", "location": "Daha/Pusar" },
+  { "district": "Baghpat", "location": "Khekra" },
+  { "district": "Baghpat", "location": "Baraout" },
+
+  { "district": "Ghaziabad", "location": "Masauri Nahal, Dasna" },
+  { "district": "Ghaziabad", "location": "Loni/Chirori" },
+
+  { "district": "Bulandshahr", "location": "Dibai" },
+  { "district": "Bulandshahr", "location": "Khurjha - Khaas" },
+  { "district": "Bulandshahr", "location": "Nauchandi Ground" },
+
+  { "district": "Meerut", "location": "Mawana" },
+  { "district": "Meerut", "location": "Sardana" },
+  { "district": "Meerut", "location": "Nauchandi Ground" },
+  { "district": "Meerut", "location": "Patla Newari, Modinagar" }
+]

@@ -1,0 +1,147 @@
+"use client"
+import { useEffect, useState, useRef, useCallback } from 'react'
+import LocationSelector from '../components/LocationSelector'
+
+export default function ListingsPage() {
+  const [items, setItems] = useState([])
+  const [search, setSearch] = useState('')
+  const [query, setQuery] = useState('')
+  const [sort, setSort] = useState('newest')
+  const [selectedFilter, setSelectedFilter] = useState({ district: '', location: '' })
+  const [page, setPage] = useState(1)
+  const [limit] = useState(12)
+  const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const sentinelRef = useRef(null)
+
+  const fetchPage = useCallback(async (p = 1, reset = false) => {
+    try {
+      if (reset) {
+        setLoading(true)
+        setHasMore(true)
+      } else {
+        setLoadingMore(true)
+      }
+
+      const params = new URLSearchParams()
+      params.set('page', String(p))
+      params.set('limit', String(limit))
+      if (selectedFilter.district) params.set('district', selectedFilter.district)
+      if (selectedFilter.location) params.set('location', selectedFilter.location)
+      if (search) params.set('search', search)
+      if (sort) params.set('sort', sort)
+
+      const res = await fetch(`/api/signatures?${params.toString()}`)
+      const json = await res.json()
+      const docs = json.docs || []
+      const tot = json.total || docs.length
+
+      if (reset) setItems(docs)
+      else setItems(prev => [...prev, ...docs])
+      setTotal(tot)
+      setPage(p)
+      setHasMore((p * limit) < tot)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+      setLoadingMore(false)
+    }
+  }, [limit, search, selectedFilter, sort])
+
+  // load (and reload) when filters/search/sort change
+  useEffect(() => {
+    fetchPage(1, true)
+  }, [search, sort, selectedFilter, fetchPage])
+
+  // debounce query -> search
+  useEffect(() => {
+    const t = setTimeout(() => setSearch(query), 300)
+    return () => clearTimeout(t)
+  }, [query])
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!sentinel) return
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && hasMore && !loadingMore && !loading) {
+          fetchPage(page + 1, false)
+        }
+      })
+    }, { rootMargin: '300px' })
+    obs.observe(sentinel)
+    return () => obs.disconnect()
+  }, [hasMore, loadingMore, loading, page, fetchPage])
+
+  // client-side filtered list is simply `items` (server handles filtering/paging)
+  const filtered = items
+
+  return (
+    <main style={{padding: '56px 20px', maxWidth: 1200, margin: '0 auto'}}>
+      <div style={{textAlign: 'center', marginBottom: 28}}>
+        <div style={{display: 'inline-block', padding: '6px 12px', borderRadius: 999, background: '#f1f5f9', color: '#475569', fontSize: 12}}>Signatures</div>
+        <h1 style={{fontSize: 40, margin: '18px 0 8px', lineHeight: 1.1}}>Signatures Wall</h1>
+        <p style={{color: '#6b7280', maxWidth: 860, margin: '0 auto'}}>A cozy place for visitors to leave their mark — browse messages and names.</p>
+        <div style={{marginTop:8, color:'#94a3b8'}}>{filtered.length} result{filtered.length !== 1 ? 's' : ''}</div>
+      </div>
+
+      <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:18,flexWrap:'wrap',justifyContent:'center'}}>
+        <div style={{minWidth:"80vw"}}>
+          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search name or message" style={{width:'100%',padding:'12px',borderRadius:12,border:'1px solid #e6edf3'}} />
+        </div>
+        <div style={{display:'flex',gap:8,alignItems:'center', display: "none"}}>
+          <LocationSelector value={selectedFilter} onChange={setSelectedFilter} autoSelect={false} />
+          <select value={sort} onChange={e => setSort(e.target.value)} style={{padding:10,borderRadius:8}}>
+            <option value="newest">Newest</option>
+            <option value="old">Oldest</option>
+          </select>
+          <button className="small-btn" onClick={() => { setSelectedFilter({district:'',location:''}); setSearch(''); setQuery(''); setSort('newest') }}>
+            Clear
+          </button>
+        </div>
+      </div>
+
+      {loading && items.length === 0 ? (
+        <div style={{display:'flex',justifyContent:'center',padding:40}}>
+          <div className="spinner" aria-hidden></div>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="empty-state card">
+          <h3>No signatures found</h3>
+          <p>Be the first to add a signature or try a different search term.</p>
+        </div>
+      ) : (
+        <>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24}}>
+            {filtered.map((item, i) => (
+              <article key={item._id} style={{background: '#fff', borderRadius: 16, padding: 22, boxShadow: '0 10px 30px rgba(2,6,23,0.06)', transform: i === 1 ? 'rotate(-3deg)' : i === 2 ? 'rotate(2deg)' : 'none'}}>
+                <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+                  <div style={{width:56,height:56,borderRadius:999,display:'flex',alignItems:'center',justifyContent:'center',background:'#eef2ff',fontWeight:700,color:'#0f172a'}}>{(item.name || 'A').split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
+                  <div>
+                    <div style={{fontWeight:700}}>{item.name || 'Anonymous'}</div>
+                    <div style={{fontSize:12,color:'#94a3b8'}}>{item.location || 'Unknown'},{item.district ||""}</div>
+                  </div>
+                </div>
+                {item.signature ? (
+                  <div style={{marginTop:12}}>
+                    <img src={item.signature} alt={item.name || 'signature'} className="sig-img" />
+                  </div>
+                ) : null}
+                <p style={{marginTop:14,color:'#0f172a',lineHeight:1.5}}>{item.message || '—'}</p>
+                <div style={{marginTop:16,color:'#e6eef8',fontSize:28,opacity:0.35}}>“”</div>
+              </article>
+            ))}
+          </div>
+
+          <div ref={sentinelRef} style={{height:1,marginTop:8}} />
+          {loadingMore ? (
+            <div style={{display:'flex',justifyContent:'center',padding:16}}><div className="spinner" aria-hidden></div></div>
+          ) : null}
+        </>
+      )}
+    </main>
+  )
+}

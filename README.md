@@ -1,0 +1,63 @@
+# Cricket Signatures App
+
+Simple Next.js app with a frontend form, digital signature canvas, and MongoDB backend to save signatures and messages.
+
+Environment:
+
+- Create a MongoDB URI and set it in `.env.local` as `MONGODB_URI`.
+
+Run locally:
+
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:3000
+
+Docker
+------
+
+Build the image:
+
+```bash
+docker build -t cricket-signatures .
+```
+
+Run the container (provide a MongoDB URI via env):
+
+```bash
+docker run -e MONGODB_URI="your-mongo-uri" -p 3000:3000 cricket-signatures
+```
+
+Notes
+- The Docker image uses `npm start` for production. Ensure `MONGODB_URI` is set when running the container.
+
+Vercel Deployment
+-----------------
+
+Recommended (Git integration):
+
+1. Push this repository to GitHub, GitLab, or Bitbucket.
+2. Go to https://vercel.com and import the project (New Project → Import from Git).
+3. During import, add an Environment Variable named `MONGODB_URI` with your MongoDB connection string. Set it for `Production` (and optionally `Preview`).
+4. Vercel will detect Next.js and build automatically. Deploy and your site will be live.
+
+Using Vercel CLI:
+
+```bash
+# install CLI
+npm i -g vercel
+
+# run from project root and follow prompts
+vercel
+
+# add MONGODB_URI via CLI for production
+vercel env add MONGODB_URI production
+```
+
+Notes for Vercel:
+- Ensure `MONGODB_URI` is set in the project settings or via the CLI before visiting the site.
+- If you need to set Node version, configure it in the Vercel project settings (Node 18+ recommended).
+
+
