@@ -82,7 +82,7 @@ export default function ListingsPage() {
   const filtered = items
 
   return (
-    <main style={{padding: '56px 20px', maxWidth: 1200, margin: '0 auto'}}>
+    <main style={{padding: '26px 20px', maxWidth: 1200, margin: '0 auto'}}>
       <div style={{textAlign: 'center', marginBottom: 28}}>
         <div style={{display: 'inline-block', padding: '6px 12px', borderRadius: 999, background: '#f1f5f9', color: '#475569', fontSize: 12}}>Signatures</div>
         <h1 style={{fontSize: 40, margin: '18px 0 8px', lineHeight: 1.1}}>Signatures Wall</h1>
