@@ -23,6 +23,8 @@ export async function GET(request) {
     const location = sp.get('location') || ''
     const search = (sp.get('search') || '').trim()
     const sort = sp.get('sort') || 'newest'
+    // option to exclude large fields (like base64 signature) for faster responses
+    const includeSignature = String(sp.get('includeSignature') || 'false') === 'true'
 
     const filter = {}
     if (district) filter.district = district
@@ -32,10 +34,23 @@ export async function GET(request) {
       filter.$or = [ { name: rx }, { message: rx }, { location: rx } ]
     }
 
-    const total = await Signature.countDocuments(filter)
     const skip = (page - 1) * limit
-    const cursor = Signature.find(filter).sort({ createdAt: sort === 'old' ? 1 : -1 }).skip(skip).limit(limit).lean()
-    const docs = await cursor.exec()
+    // run count and find in parallel to reduce total latency
+    const findQuery = Signature.find(filter)
+      .sort({ createdAt: sort === 'old' ? 1 : -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean()
+    if (!includeSignature) {
+      // exclude the potentially large `signature` field unless requested
+      findQuery.select('-signature')
+    }
+
+    const [total, docs] = await Promise.all([
+      Signature.countDocuments(filter),
+      findQuery.exec(),
+    ])
+
     return NextResponse.json({ docs, total, page, limit }, { headers: corsHeaders })
   } catch (err) {
     console.error(err)

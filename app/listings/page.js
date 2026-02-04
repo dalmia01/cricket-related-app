@@ -28,6 +28,8 @@ export default function ListingsPage() {
       const params = new URLSearchParams()
       params.set('page', String(p))
       params.set('limit', String(limit))
+      // include base64 signature data in listing responses
+      params.set('includeSignature', 'true')
       if (selectedFilter.district) params.set('district', selectedFilter.district)
       if (selectedFilter.location) params.set('location', selectedFilter.location)
       if (search) params.set('search', search)
