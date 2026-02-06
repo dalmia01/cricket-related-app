@@ -61,3 +61,38 @@ Notes for Vercel:
 - If you need to set Node version, configure it in the Vercel project settings (Node 18+ recommended).
 
 
+Realtime (Pusher) setup
+------------------------
+
+To enable realtime updates (so other machines see new signatures immediately), provide Pusher credentials and expose a public key for the client.
+
+Server environment variables (set in `.env.local` or your host platform):
+
+- `PUSHER_APP_ID` — your Pusher App ID
+- `PUSHER_KEY` — your Pusher Key (also used on the client as `NEXT_PUBLIC_PUSHER_KEY`)
+- `PUSHER_SECRET` — your Pusher Secret
+- `PUSHER_CLUSTER` — your Pusher cluster (e.g. `mt1`)
+
+Client environment variables (public):
+
+- `NEXT_PUBLIC_PUSHER_KEY` — same value as `PUSHER_KEY`
+- `NEXT_PUBLIC_PUSHER_CLUSTER` — same value as `PUSHER_CLUSTER`
+
+Example `.env.local` (local development):
+
+```
+MONGODB_URI="your-mongo-uri"
+PUSHER_APP_ID="your-pusher-app-id"
+PUSHER_KEY="your-pusher-key"
+PUSHER_SECRET="your-pusher-secret"
+PUSHER_CLUSTER="your-pusher-cluster"
+NEXT_PUBLIC_PUSHER_KEY="your-pusher-key"
+NEXT_PUBLIC_PUSHER_CLUSTER="your-pusher-cluster"
+```
+
+Notes:
+
+- The server triggers an event after a successful MongoDB write; the client subscribes and refreshes the first page when a `created` event arrives.
+- If realtime delivery fails, saves still succeed (server logs the trigger error but returns 201).
+
+

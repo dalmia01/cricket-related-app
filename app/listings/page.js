@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState, useRef, useCallback } from 'react'
-import LocationSelector from '../components/LocationSelector'
+import Pusher from 'pusher-js'
 
 export default function ListingsPage() {
   const [items, setItems] = useState([])
@@ -78,6 +78,34 @@ export default function ListingsPage() {
     obs.observe(sentinel)
     return () => obs.disconnect()
   }, [hasMore, loadingMore, loading, page, fetchPage])
+
+  // realtime: subscribe to Pusher channel and refresh when new signature is created
+  useEffect(() => {
+    try {
+      const key = process.env.NEXT_PUBLIC_PUSHER_KEY
+      const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER
+      if (!key) return
+      const pusher = new Pusher(key, { cluster: cluster || undefined, forceTLS: true })
+      const channel = pusher.subscribe('signatures')
+      const handler = () => {
+        // reload first page to keep ordering consistent
+        fetchPage(1, true)
+      }
+      channel.bind('created', handler)
+
+      return () => {
+        try {
+          channel.unbind('created', handler)
+          pusher.unsubscribe('signatures')
+          pusher.disconnect()
+        } catch (e) {
+          // ignore cleanup errors
+        }
+      }
+    } catch (e) {
+      console.error('Realtime subscription error', e)
+    }
+  }, [fetchPage])
 
   // client-side filtered list is simply `items` (server handles filtering/paging)
   const filtered = items

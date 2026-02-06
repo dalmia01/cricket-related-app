@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import dbConnect from '../../../lib/dbConnect'
 import Signature from '../../../models/Signature'
 
+// Use Node.js serverless runtime for MongoDB (do NOT use Edge)
+export const runtime = 'nodejs'
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
@@ -10,6 +13,11 @@ const corsHeaders = {
 
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: corsHeaders })
+}
+
+// Prefer functions to run in Vercel Mumbai region (bom1)
+export const config = {
+  regions: ['bom1'],
 }
 
 export async function GET(request) {
