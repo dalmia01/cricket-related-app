@@ -15,13 +15,15 @@ export async function OPTIONS() {
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { name, phone, district, location, message, signature } = body || {}
+    const { name, phone, state, district, city, message, signature } = body || {}
     if (!name || !phone || !signature) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400, headers: corsHeaders })
     }
 
     await dbConnect()
-    const doc = await Signature.create({ name, phone, district, location, message, signature })
+    console.log("name, phone, state, district, city, message, signature", {name, phone, state, district, city, message, signature})
+    const doc = await Signature.create({ name, phone, state, district, city, message, signature })
+    console.log("docsssss", {doc})
     return NextResponse.json(doc, { status: 201, headers: corsHeaders })
   } catch (err) {
     console.error(err)

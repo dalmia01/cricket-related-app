@@ -1,26 +1,26 @@
 [
-  { "district": "Greater Noida", "location": "Sikandrabad" },
-  { "district": "Greater Noida", "location": "Sahapur Maidan, Degree College" },
-  { "district": "Greater Noida", "location": "Dadri Village - Lohrly" },
-  { "district": "Greater Noida", "location": "Jewar - Gothri, inter College Maidan" },
+  { "state": "Uttar Pradesh","district": "Greater Noida", "city": "Sikandrabad" },
+  { "state": "Uttar Pradesh","district": "Greater Noida", "city": "Sahapur Maidan, Degree College" },
+  { "state": "Uttar Pradesh","district": "Greater Noida", "city": "Dadri Village - Lohrly" },
+  { "state": "Uttar Pradesh","district": "Greater Noida", "city": "Jewar - Gothri, inter College Maidan" },
 
-  { "district": "Hapur", "location": "Chitoli Ground, Hapur-B'sahar Rd" },
-  { "district": "Hapur", "location": "Pilakhuwan/Dhaulauna" },
-  { "district": "Hapur", "location": "Garh" },
+  { "state": "Uttar Pradesh","district": "Hapur", "city": "Chitoli Ground, Hapur-B'sahar Rd" },
+  { "state": "Uttar Pradesh","district": "Hapur", "city": "Pilakhuwan/Dhaulauna" },
+  { "state": "Uttar Pradesh","district": "Hapur", "city": "Garh" },
 
-  { "district": "Baghpat", "location": "Daha/Pusar" },
-  { "district": "Baghpat", "location": "Khekra" },
-  { "district": "Baghpat", "location": "Baraout" },
+  { "state": "Uttar Pradesh","district": "Baghpat", "city": "Daha/Pusar" },
+  { "state": "Uttar Pradesh","district": "Baghpat", "city": "Khekra" },
+  { "state": "Uttar Pradesh","district": "Baghpat", "city": "Baraout" },
 
-  { "district": "Ghaziabad", "location": "Masauri Nahal, Dasna" },
-  { "district": "Ghaziabad", "location": "Loni/Chirori" },
+  { "state": "Uttar Pradesh","district": "Ghaziabad", "city": "Masauri Nahal, Dasna" },
+  { "state": "Uttar Pradesh","district": "Ghaziabad", "city": "Loni/Chirori" },
+  { "state": "Uttar Pradesh","district": "Bulandshahr", "city": "Dibai" },
+  { "state": "Uttar Pradesh","district": "Bulandshahr", "city": "Khurjha - Khaas" },
+  { "state": "Uttar Pradesh","district": "Bulandshahr", "city": "Nauchandi Ground" },
 
-  { "district": "Bulandshahr", "location": "Dibai" },
-  { "district": "Bulandshahr", "location": "Khurjha - Khaas" },
-  { "district": "Bulandshahr", "location": "Nauchandi Ground" },
-
-  { "district": "Meerut", "location": "Mawana" },
-  { "district": "Meerut", "location": "Sardana" },
-  { "district": "Meerut", "location": "Nauchandi Ground" },
-  { "district": "Meerut", "location": "Patla Newari, Modinagar" }
+  { "state": "Uttar Pradesh","district": "Meerut", "city": "Mawana" },
+  { "state": "Uttar Pradesh","district": "Meerut", "city": "Sardana" },
+  { "state": "Uttar Pradesh","district": "Meerut", "city": "Nauchandi Ground" },
+  { "state": "Uttar Pradesh","district": "Meerut", "city": "Patla Newari, Modinagar" },
+  { "state": "Uttar Pradesh","district": "Meerut", "city": "Sardhana location, jain milan" }
 ]

@@ -2,126 +2,114 @@
 import { useEffect, useMemo, useState } from "react";
 import staticLocations from "../../lib/locations.json";
 
-export default function LocationSelector({
-  value,
-  onChange,
-  autoSelect = true,
-}) {
-  const [districts, setDistricts] = useState([]);
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [locations, setLocations] = useState(staticLocations || []);
-  const [locationFilter, setLocationFilter] = useState("");
-  const initialLocation =
-    typeof value === "string" ? value : (value && value.location) || "";
-  const initialDistrict = (value && value.district) || "";
-  const [selectedLocation, setSelectedLocation] = useState(initialLocation);
+export default function LocationSelector({ value, onChange, autoSelect = true }) {
+  const [states, setStates] = useState([])
+  const [districts, setDistricts] = useState([])
+  const [locations, setLocations] = useState(staticLocations || [])
+
+  const initialCity = typeof value === "string" ? value : (value && value.city) || ""
+  const initialDistrict = (value && value.district) || ""
+  const initialState = (value && value.state) || ""
+
+  const [selectedState, setSelectedState] = useState(initialState)
+  const [selectedDistrict, setSelectedDistrict] = useState(initialDistrict)
+  const [selectedCity, setSelectedCity] = useState(initialCity)
+  const [cityFilter, setCityFilter] = useState("")
 
   useEffect(() => {
     async function init() {
-      let locations = staticLocations;
-      if (!locations || !locations.length) {
+      let locs = staticLocations
+      if (!locs || !locs.length) {
         try {
-          const mod = await import("../../lib/locations.json");
-          locations = mod.default || mod;
+          const mod = await import("../../lib/locations.json")
+          locs = mod.default || mod
         } catch (e) {
-          locations = [];
+          locs = []
         }
       }
+      const ss = Array.from(new Set((locs || []).map((l) => l.state))).sort()
+      setStates(ss)
+      setLocations(locs || [])
 
-      const ds = Array.from(
-        new Set((locations || []).map((l) => l.district)),
-      ).sort();
-      setDistricts(ds);
-      setLocations(locations || []);
-
-      if (initialLocation || initialDistrict) {
-        const entry =
-          (locations || []).find((l) => l.location === initialLocation) ||
-          (locations || []).find((l) => l.district === initialDistrict);
+      if (initialCity || initialDistrict || initialState) {
+        const entry = (locs || []).find((l) => l.city === initialCity) || (locs || []).find((l) => l.district === initialDistrict) || (locs || []).find((l) => l.state === initialState)
         if (entry) {
-          setSelectedDistrict(initialDistrict || entry.district);
-          setSelectedLocation(initialLocation || entry.location || "");
+          setSelectedState(initialState || entry.state)
+          setSelectedDistrict(initialDistrict || entry.district)
+          setSelectedCity(initialCity || entry.city || "")
         }
       }
     }
-    init();
-  }, []);
+    init()
+  }, [])
 
-  const filtered = useMemo(() => {
-    if (!selectedDistrict) return [];
-    const opts = (locations || [])
-      .filter((l) => l.district === selectedDistrict)
-      .map((l) => l.location);
-    if (!locationFilter) return opts;
-    return opts.filter((loc) =>
-      loc.toLowerCase().includes(locationFilter.toLowerCase()),
-    );
-  }, [selectedDistrict]);
+  const filteredDistricts = useMemo(() => {
+    if (!selectedState) return []
+    return Array.from(new Set((locations || []).filter((l) => l.state === selectedState).map((l) => l.district))).sort()
+  }, [selectedState, locations])
 
-  useEffect(() => {
-    if (autoSelect && !selectedDistrict && districts.length)
-      setSelectedDistrict(districts[0]);
-  }, [districts, autoSelect]);
+  const filteredCities = useMemo(() => {
+    if (!selectedDistrict) return []
+    const opts = (locations || []).filter((l) => l.district === selectedDistrict).map((l) => l.city)
+    if (!cityFilter) return opts
+    return opts.filter((c) => c.toLowerCase().includes(cityFilter.toLowerCase()))
+  }, [selectedDistrict, locations, cityFilter])
 
   useEffect(() => {
-    if (
-      autoSelect &&
-      selectedDistrict &&
-      (!selectedLocation || !filtered.includes(selectedLocation))
-    ) {
-      setSelectedLocation(filtered[0] || "");
+    if (autoSelect && !selectedState && states.length) setSelectedState(states[0])
+  }, [states, autoSelect])
+
+  useEffect(() => {
+    if (autoSelect && selectedState && (!selectedDistrict || !filteredDistricts.includes(selectedDistrict))) {
+      setSelectedDistrict(filteredDistricts[0] || "")
     }
-  }, [selectedDistrict, autoSelect]);
+  }, [selectedState, filteredDistricts, autoSelect])
 
   useEffect(() => {
-    onChange &&
-      onChange({ district: selectedDistrict, location: selectedLocation });
-  }, [selectedDistrict, selectedLocation]);
+    if (autoSelect && selectedDistrict && (!selectedCity || !filteredCities.includes(selectedCity))) {
+      setSelectedCity(filteredCities[0] || "")
+    }
+  }, [selectedDistrict, filteredCities, autoSelect])
+
+  useEffect(() => {
+    onChange && onChange({ state: selectedState, district: selectedDistrict, city: selectedCity })
+  }, [selectedState, selectedDistrict, selectedCity])
 
   return (
     <div className="location-selector">
-      <label style={{ display: "block", marginTop: 8 }}>District</label>
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <select
-          value={selectedDistrict}
-          onChange={(e) => setSelectedDistrict(e.target.value)}
-          style={{ flex: 1 }}
-        >
+      <label style={{ display: "block", marginTop: 8, marginBottom: 8 }}>State</label>
+      <select value={selectedState} onChange={(e) => setSelectedState(e.target.value)} style={{ width: "100%" }}>
+        <option value="">-- Select state --</option>
+        {states.map((s) => (
+          <option key={s} value={s}>{s}</option>
+        ))}
+      </select>
+
+      <label style={{ display: "block", marginTop: 8, marginBottom: 8 }}>District</label>
+      {selectedState ? (
+        <select value={selectedDistrict} onChange={(e) => setSelectedDistrict(e.target.value)} style={{ width: "100%" }}>
           <option value="">-- Select district --</option>
-          {districts.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
+          {filteredDistricts.map((d) => (
+            <option key={d} value={d}>{d}</option>
           ))}
         </select>
-      </div>
-      <label style={{ display: "block", marginTop: 8 }}>Location</label>
+      ) : (
+        <div style={{ color: "#94a3b8", fontSize: 13 }}>Choose a state first</div>
+      )}
+
+      <label style={{ display: "block", marginTop: 8, marginBottom: 8 }}>City</label>
       {selectedDistrict ? (
         <>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
-              style={{ flex: 1 }}
-            >
-              {autoSelect ? (
-                <option value="">-- Select location --</option>
-              ) : (
-                <option value="">All locations</option>
-              )}
-              {filtered.map((loc) => (
-                <option key={loc} value={loc}>
-                  {loc}
-                </option>
-              ))}
-            </select>
-          </div>
+          <select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} style={{ width: "100%" }}>
+            {autoSelect ? <option value="">-- Select city --</option> : <option value="">All cities</option>}
+            {filteredCities.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
         </>
       ) : (
-        <div style={{ color: "#94a3b8", fontSize: 13 }}>
-          Choose a district first
-        </div>
+        <div style={{ color: "#94a3b8", fontSize: 13 }}>Choose a district first</div>
       )}
     </div>
-  );
+  )
 }

@@ -19,19 +19,21 @@ export async function GET(request) {
     const sp = url.searchParams
     const page = Math.max(1, parseInt(sp.get('page') || '1', 10))
     const limit = Math.min(200, Math.max(5, parseInt(sp.get('limit') || '20', 10)))
+    const state = sp.get('state') || ''
     const district = sp.get('district') || ''
-    const location = sp.get('location') || ''
+    const city = sp.get('city') || ''
     const search = (sp.get('search') || '').trim()
     const sort = sp.get('sort') || 'newest'
     // option to exclude large fields (like base64 signature) for faster responses
     const includeSignature = String(sp.get('includeSignature') || 'false') === 'true'
 
     const filter = {}
+    if (state) filter.state = state
     if (district) filter.district = district
-    if (location) filter.location = location
+    if (city) filter.city = city
     if (search) {
       const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
-      filter.$or = [ { name: rx }, { message: rx }, { location: rx } ]
+      filter.$or = [ { name: rx }, { message: rx }, { city: rx } ]
     }
 
     const skip = (page - 1) * limit

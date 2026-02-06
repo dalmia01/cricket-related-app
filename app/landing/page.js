@@ -85,6 +85,7 @@ export default function LandingPage() {
   const [phone, setPhone] = useState('')
   const [selectedLocation, setSelectedLocation] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState('')
+  const [selectedState, setSelectedState] = useState('')
   const [signature, setSignature] = useState(null)
   const signatureRef = useRef(null)
   const [message, setMessage] = useState('Great service')
@@ -104,7 +105,7 @@ export default function LandingPage() {
       return
     }
     setLoading(true)
-    const payload = { name, phone: phoneDigits, district: selectedDistrict, location: selectedLocation, message, signature }
+    const payload = { name, phone: phoneDigits, state: selectedState, district: selectedDistrict, city: selectedLocation, message, signature }
     try {
       const res = await fetch('/api/save', {
         method: 'POST',
@@ -116,8 +117,9 @@ export default function LandingPage() {
       try {
         localStorage.removeItem('visitor.name')
         localStorage.removeItem('visitor.phone')
+        localStorage.removeItem('visitor.state')
         localStorage.removeItem('visitor.district')
-        localStorage.removeItem('visitor.location')
+        localStorage.removeItem('visitor.city')
       } catch (e) {}
       // show a toast and redirect to base signup path after it disappears
       setToastMessage('Saved successfully')
@@ -142,14 +144,16 @@ export default function LandingPage() {
     try {
       const storedName = localStorage.getItem('visitor.name') || ''
       const storedPhone = localStorage.getItem('visitor.phone') || ''
+      const storedState = localStorage.getItem('visitor.state') || ''
       const storedDistrict = localStorage.getItem('visitor.district') || ''
-      const storedLocation = localStorage.getItem('visitor.location') || ''
+      const storedLocation = localStorage.getItem('visitor.city') || ''
       if (!storedName || !storedPhone) {
         router.replace('/')
         return
       }
       setName(storedName)
       setPhone(storedPhone)
+      setSelectedState(storedState)
       setSelectedDistrict(storedDistrict)
       setSelectedLocation(storedLocation)
     } catch (e) {
@@ -158,13 +162,16 @@ export default function LandingPage() {
   }, [])
 
   function handleLocationChange(selection) {
-    // selection: { district, location }
-    const loc = selection && selection.location ? selection.location : ''
+    // selection: { state, district, city }
+    const st = selection && selection.state ? selection.state : ''
+    const loc = selection && selection.city ? selection.city : ''
     const dist = selection && selection.district ? selection.district : ''
+    setSelectedState(st)
     setSelectedLocation(loc)
     setSelectedDistrict(dist)
     try {
-      localStorage.setItem('visitor.location', loc || '')
+      localStorage.setItem('visitor.state', st || '')
+      localStorage.setItem('visitor.city', loc || '')
       localStorage.setItem('visitor.district', dist || '')
     } catch (e) {}
   }
@@ -173,14 +180,15 @@ export default function LandingPage() {
     <main className="container">
       <h1>Landing</h1>
       <div className="mt-2 card">
-        <p><strong>{name}</strong> — {phone} — {selectedDistrict ? `${selectedDistrict} / ${selectedLocation}` : selectedLocation}</p>
+        <p><strong>{name}</strong> — {phone} — {selectedState ? `${selectedState} / ${selectedDistrict} / ${selectedLocation}` : (selectedDistrict ? `${selectedDistrict} / ${selectedLocation}` : selectedLocation)}</p>
 
         <label>Digital signature { !signature && <span style={{color:'red',marginLeft:8,fontSize:12}}>* required</span> }</label>
         <SignatureCanvas ref={signatureRef} onChange={setSignature} />
+        <div style={{height:8}} />
         {!signature && (
           <div style={{color:'red',fontSize:13,marginTop:8}}>Signature required</div>
         )}
-        <div style={{display:'flex',gap:8,marginTop:8}}>
+          <div style={{display:'flex',gap:8,marginTop:8}}>
           <button onClick={() => { try { signatureRef.current && signatureRef.current.clear(); setSignature(null) } catch(e){} }} className="btn">Clear signature</button>
         </div>
 

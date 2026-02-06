@@ -7,7 +7,7 @@ export default function ListingsPage() {
   const [search, setSearch] = useState('')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('newest')
-  const [selectedFilter, setSelectedFilter] = useState({ district: '', location: '' })
+  const [selectedFilter, setSelectedFilter] = useState({ state: '', district: '', city: '' })
   const [page, setPage] = useState(1)
   const [limit] = useState(12)
   const [total, setTotal] = useState(0)
@@ -30,8 +30,9 @@ export default function ListingsPage() {
       params.set('limit', String(limit))
       // include base64 signature data in listing responses
       params.set('includeSignature', 'true')
+      if (selectedFilter.state) params.set('state', selectedFilter.state)
       if (selectedFilter.district) params.set('district', selectedFilter.district)
-      if (selectedFilter.location) params.set('location', selectedFilter.location)
+      if (selectedFilter.city) params.set('city', selectedFilter.city)
       if (search) params.set('search', search)
       if (sort) params.set('sort', sort)
 
@@ -90,19 +91,9 @@ export default function ListingsPage() {
         <div style={{marginTop:8, color:'#94a3b8'}}>{filtered.length} result{filtered.length !== 1 ? 's' : ''}</div>
       </div>
 
-      <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:18,flexWrap:'wrap',justifyContent:'center'}}>
+      <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:32,flexWrap:'wrap',justifyContent:'center'}}>
         <div style={{minWidth:"80vw"}}>
           <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search name or message" style={{width:'100%',padding:'12px',borderRadius:12,border:'1px solid #e6edf3'}} />
-        </div>
-        <div style={{display:'flex',gap:8,alignItems:'center', display: "none"}}>
-          <LocationSelector value={selectedFilter} onChange={setSelectedFilter} autoSelect={false} />
-          <select value={sort} onChange={e => setSort(e.target.value)} style={{padding:10,borderRadius:8}}>
-            <option value="newest">Newest</option>
-            <option value="old">Oldest</option>
-          </select>
-          <button className="small-btn" onClick={() => { setSelectedFilter({district:'',location:''}); setSearch(''); setQuery(''); setSort('newest') }}>
-            Clear
-          </button>
         </div>
       </div>
 
@@ -119,12 +110,12 @@ export default function ListingsPage() {
         <>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24}}>
             {filtered.map((item, i) => (
-              <article key={item._id} style={{background: '#fff', borderRadius: 16, padding: 22, boxShadow: '0 10px 30px rgba(2,6,23,0.06)', transform: `rotate(${((Math.random() * 8) - 4).toFixed(2)}deg)`}}>
+              <article key={item._id} style={{maxWidth : "max-content",background: '#fff', borderRadius: 16, padding: 22, boxShadow: '0 10px 30px rgba(2,6,23,0.06)', transform: `rotate(${((Math.random() * 8) - 4).toFixed(2)}deg)`}}>
                 <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
                   <div style={{width:56,height:56,borderRadius:999,display:'flex',alignItems:'center',justifyContent:'center',background:'#eef2ff',fontWeight:700,color:'#0f172a'}}>{(item.name || 'A').split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
                   <div>
                     <div style={{fontWeight:700}}>{item.name || 'Anonymous'}</div>
-                    <div style={{fontSize:12,color:'#94a3b8'}}>{item.location || 'Unknown'},{item.district ||""}</div>
+                              <div style={{fontSize:12,color:'#94a3b8'}}>{item.city || 'Unknown'},{item.district ||""},{item.state ||""}</div>
                   </div>
                 </div>
                 {item.signature ? (

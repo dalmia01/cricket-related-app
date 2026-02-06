@@ -7,7 +7,7 @@ export default function HomePage() {
   const router = useRouter()
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
-  const [selectedFilter, setSelectedFilter] = useState({ district: '', location: '' })
+  const [selectedFilter, setSelectedFilter] = useState({ state: '', district: '', city: '' })
   const [phoneError, setPhoneError] = useState('')
 
   function handleProceed(e) {
@@ -17,14 +17,15 @@ export default function HomePage() {
       setPhoneError('Phone must be exactly 10 digits')
       return
     }
-    if (!name || !selectedFilter.location) return alert('Please fill all fields')
+    if (!name || !selectedFilter.city) return alert('Please fill all fields')
     setPhoneError('')
     // persist visitor info temporarily and navigate to landing
     try {
       localStorage.setItem('visitor.name', name)
       localStorage.setItem('visitor.phone', cleaned)
+      localStorage.setItem('visitor.state', selectedFilter.state || '')
       localStorage.setItem('visitor.district', selectedFilter.district || '')
-      localStorage.setItem('visitor.location', selectedFilter.location || '')
+      localStorage.setItem('visitor.city', selectedFilter.city || '')
     } catch (e) {
       // ignore storage errors
     }
