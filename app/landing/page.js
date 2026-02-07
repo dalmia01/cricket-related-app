@@ -88,7 +88,7 @@ export default function LandingPage() {
   const [selectedState, setSelectedState] = useState('')
   const [signature, setSignature] = useState(null)
   const signatureRef = useRef(null)
-  const [message, setMessage] = useState('Great service')
+  const [message, setMessage] = useState('Best wishes Team India — play bold, play proud 💙')
   const [loading, setLoading] = useState(false)
   const [toastVisible, setToastVisible] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
