@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import dbConnect from '../../../lib/dbConnect'
 import Signature from '../../../models/Signature'
+import mongoose from 'mongoose'
 
 // Use Node.js serverless runtime for MongoDB (do NOT use Edge)
 export const runtime = 'nodejs'
@@ -44,7 +45,30 @@ export async function GET(request) {
       ? baseFields + ' signature -_id'
       : baseFields + ' -_id'
 
-    const findQuery = Signature.find(filter)
+    // determine date to query (query param `date` in YYYY-MM-DD or YYYYMMDD), default to today (UTC)
+    const dateParam = sp.get('date') || ''
+    let targetDate = new Date()
+    if (dateParam) {
+      // accept YYYY-MM-DD or YYYYMMDD (interpret as local date)
+      const cleaned = dateParam.replace(/-/g, '')
+      if (/^\d{8}$/.test(cleaned)) {
+        const y = parseInt(cleaned.slice(0, 4), 10)
+        const m = parseInt(cleaned.slice(4, 6), 10) - 1
+        const d = parseInt(cleaned.slice(6, 8), 10)
+        // construct local date for the provided Y/M/D
+        targetDate = new Date(y, m, d)
+      }
+    }
+
+    const yyyy = targetDate.getFullYear()
+    const mm = String(targetDate.getMonth() + 1).padStart(2, '0')
+    const dd = String(targetDate.getDate()).padStart(2, '0')
+    const collectionName = `signatures_${dd}-${mm}-${yyyy}`
+    const modelName = `Signature_${collectionName}`
+    const schema = Signature.schema
+    const DailySignature = mongoose.models[modelName] || mongoose.model(modelName, schema, collectionName)
+
+    const findQuery = DailySignature.find(filter)
       .sort({ createdAt: sort === 'old' ? 1 : -1 })
       .skip(skip)
       .limit(limit)
@@ -52,7 +76,7 @@ export async function GET(request) {
       .lean()
 
     const [total, docs] = await Promise.all([
-      Signature.countDocuments(filter),
+      DailySignature.countDocuments(filter),
       findQuery.exec(),
     ])
 

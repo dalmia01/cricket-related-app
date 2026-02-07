@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import dbConnect from '../../../lib/dbConnect'
 import Signature from '../../../models/Signature'
+import mongoose from 'mongoose'
 
 // Use Node.js serverless runtime for MongoDB (do NOT use Edge)
 export const runtime = 'nodejs'
@@ -28,7 +29,17 @@ export async function POST(request) {
     }
 
     await dbConnect()
-    const doc = await Signature.create({ name, phone, state, district, city, message, signature })
+    // Create/use a date-based collection: signatures_YYYYMMDD
+    // Use local server date (not UTC) so collection matches server/local day
+    const now = new Date()
+    const yyyy = now.getFullYear()
+    const mm = String(now.getMonth() + 1).padStart(2, '0')
+    const dd = String(now.getDate()).padStart(2, '0')
+    const collectionName = `signatures_${dd}-${mm}-${yyyy}`
+    const modelName = `Signature_${collectionName}`
+    const schema = Signature.schema
+    const DailySignature = mongoose.models[modelName] || mongoose.model(modelName, schema, collectionName)
+    const doc = await DailySignature.create({ name, phone, state, district, city, message, signature })
 
     try {
       // Only initialize Pusher in production and when required env vars are present.
