@@ -1,26 +1,3 @@
 [
-  { "state": "Uttar Pradesh", "district": "Baghpat", "city": "Baraout" },
-  { "state": "Uttar Pradesh", "district": "Baghpat", "city": "Daha/Pusar" },
-  { "state": "Uttar Pradesh", "district": "Baghpat", "city": "Khekra" },
-
-  { "state": "Uttar Pradesh", "district": "Bulandshahr", "city": "Dibai" },
-  { "state": "Uttar Pradesh", "district": "Bulandshahr", "city": "Khurjha - Khaas" },
-  { "state": "Uttar Pradesh", "district": "Bulandshahr", "city": "Nauchandi Ground" },
-
-  { "state": "Uttar Pradesh", "district": "Ghaziabad", "city": "Loni/Chirori" },
-  { "state": "Uttar Pradesh", "district": "Ghaziabad", "city": "Masauri Nahal, Dasna" },
-
-  { "state": "Uttar Pradesh", "district": "Greater Noida", "city": "Dadri Village - Lohrly" },
-  { "state": "Uttar Pradesh", "district": "Greater Noida", "city": "Jewar - Gothri, inter College Maidan" },
-  { "state": "Uttar Pradesh", "district": "Greater Noida", "city": "Sahapur Maidan, Degree College" },
-  { "state": "Uttar Pradesh", "district": "Greater Noida", "city": "Sikandrabad" },
-
-  { "state": "Uttar Pradesh", "district": "Hapur", "city": "Chitoli Ground, Hapur-B'sahar Rd" },
-  { "state": "Uttar Pradesh", "district": "Hapur", "city": "Garh" },
-  { "state": "Uttar Pradesh", "district": "Hapur", "city": "Pilakhuwan/Dhaulauna" },
-
-  { "state": "Uttar Pradesh", "district": "Meerut", "city": "Jain Milan, Sardhana" },
-  { "state": "Uttar Pradesh", "district": "Meerut", "city": "Mawana" },
-  { "state": "Uttar Pradesh", "district": "Meerut", "city": "Nauchandi Ground" },
-  { "state": "Uttar Pradesh", "district": "Meerut", "city": "Patla Newari, Modinagar" }
+  { "state": "Uttar Pradesh", "district": "Meerut", "city": "Jain Milan, Sardhana" }
 ]

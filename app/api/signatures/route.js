@@ -16,9 +16,8 @@ export async function OPTIONS() {
 }
 
 // Prefer functions to run in Vercel Mumbai region (bom1)
-export const config = {
-  regions: ['bom1'],
-}
+// Note: `export const config` (segment export) deprecated by Next.js.
+// Region hints removed; set platform-specific regions in deployment settings if needed.
 
 export async function GET(request) {
   try {
@@ -27,34 +26,30 @@ export async function GET(request) {
     const sp = url.searchParams
     const page = Math.max(1, parseInt(sp.get('page') || '1', 10))
     const limit = Math.min(200, Math.max(5, parseInt(sp.get('limit') || '20', 10)))
-    const state = sp.get('state') || ''
-    const district = sp.get('district') || ''
-    const city = sp.get('city') || ''
     const search = (sp.get('search') || '').trim()
     const sort = sp.get('sort') || 'newest'
     // option to exclude large fields (like base64 signature) for faster responses
     const includeSignature = String(sp.get('includeSignature') || 'false') === 'true'
 
     const filter = {}
-    if (state) filter.state = state
-    if (district) filter.district = district
-    if (city) filter.city = city
     if (search) {
       const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
       filter.$or = [ { name: rx }, { message: rx }, { city: rx } ]
     }
 
     const skip = (page - 1) * limit
-    // run count and find in parallel to reduce total latency
+    const baseFields = 'name phone state district city message'
+    // use inclusion projection only; exclude `_id` explicitly when returning to frontend
+    const selectFields = includeSignature
+      ? baseFields + ' signature -_id'
+      : baseFields + ' -_id'
+
     const findQuery = Signature.find(filter)
       .sort({ createdAt: sort === 'old' ? 1 : -1 })
       .skip(skip)
       .limit(limit)
+      .select(selectFields)
       .lean()
-    if (!includeSignature) {
-      // exclude the potentially large `signature` field unless requested
-      findQuery.select('-signature')
-    }
 
     const [total, docs] = await Promise.all([
       Signature.countDocuments(filter),

@@ -140,9 +140,9 @@ export default function ListingsPage() {
             {filtered.map((item, i) => (
               <article key={item._id} style={{maxWidth : "max-content",background: '#fff', borderRadius: 16, padding: 22, boxShadow: '0 10px 30px rgba(2,6,23,0.06)', transform: `rotate(${((Math.random() * 8) - 4).toFixed(2)}deg)`}}>
                 <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
-                  <div style={{width:56,height:56,borderRadius:999,display:'flex',alignItems:'center',justifyContent:'center',background:'#eef2ff',fontWeight:700,color:'#0f172a'}}>{(item.name || 'A').split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
+                  <div style={{width:56,height:56,borderRadius:999,display:'flex',alignItems:'center',justifyContent:'center',background:'#eef2ff',fontWeight:700,color:'#0f172a', textTransform:'uppercase'}}>{(item.name || 'A').split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
                   <div>
-                    <div style={{fontWeight:700}}>{item.name || 'Anonymous'}</div>
+                    <div style={{fontWeight:700, textTransform:'capitalize'}}>{item.name || 'Anonymous'}</div>
                               <div style={{fontSize:12,color:'#94a3b8'}}>{item.city || 'Unknown'},{item.district ||""},{item.state ||""}</div>
                   </div>
                 </div>

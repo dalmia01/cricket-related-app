@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import dbConnect from '../../../lib/dbConnect'
 import Signature from '../../../models/Signature'
-import Pusher from 'pusher'
 
 // Use Node.js serverless runtime for MongoDB (do NOT use Edge)
 export const runtime = 'nodejs'
@@ -17,9 +16,8 @@ export async function OPTIONS() {
 }
 
 // Prefer functions to run in Vercel Mumbai region (bom1)
-export const config = {
-  regions: ['bom1'],
-}
+// Note: `export const config` (segment export) deprecated by Next.js.
+// Region hints removed; set platform-specific regions in deployment settings if needed.
 
 export async function POST(request) {
   try {
@@ -33,21 +31,63 @@ export async function POST(request) {
     const doc = await Signature.create({ name, phone, state, district, city, message, signature })
 
     try {
-      const pusher = new Pusher({
-        appId: process.env.PUSHER_APP_ID,
-        key: process.env.PUSHER_KEY,
-        secret: process.env.PUSHER_SECRET,
-        cluster: process.env.PUSHER_CLUSTER,
-        useTLS: true,
-      })
-      // trigger a simple public event on channel 'signatures'
-      await pusher.trigger('signatures', 'created', JSON.parse(JSON.stringify(doc)))
+      // Only initialize Pusher in production and when required env vars are present.
+      const { PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET, PUSHER_CLUSTER, NODE_ENV, VERCEL_ENV } = process.env
+      const isProd = NODE_ENV === 'production' || VERCEL_ENV === 'production'
+      if (isProd && PUSHER_APP_ID && PUSHER_KEY && PUSHER_SECRET) {
+        try {
+          const PusherModule = await import('pusher')
+          const Pusher = PusherModule && (PusherModule.default || PusherModule)
+          const pusher = new Pusher({
+            appId: PUSHER_APP_ID,
+            key: PUSHER_KEY,
+            secret: PUSHER_SECRET,
+            cluster: PUSHER_CLUSTER,
+            useTLS: true,
+          })
+          // trigger a simple public event on channel 'signatures'
+          // avoid sending large base64 `signature` data to Pusher (causes 413)
+          const payload = {
+            name: doc.name,
+            phone: doc.phone ? String(doc.phone).slice(0, 32) : undefined,
+            state: doc.state,
+            district: doc.district,
+            city: doc.city,
+            // truncate message to keep payload small
+            message: typeof doc.message === 'string' ? doc.message.slice(0, 400) : doc.message,
+            createdAt: doc.createdAt,
+            // let clients know a signature image exists without sending it
+            signaturePresent: !!doc.signature,
+          }
+
+          await pusher.trigger('signatures', 'created', payload)
+        } catch (impErr) {
+          console.error('Pusher import/trigger error', impErr)
+        }
+      } else {
+        console.warn('Skipping Pusher trigger: either not in production or Pusher env vars missing')
+      }
     } catch (triggerErr) {
       // don't fail the request if realtime notify fails; log for debugging
       console.error('Pusher trigger error', triggerErr)
     }
 
-    return NextResponse.json(doc, { status: 201, headers: corsHeaders })
+    // Return only selected fields to reduce payload size
+    const resp = {
+      _id: doc._id,
+      name: doc.name,
+      phone: doc.phone,
+      state: doc.state,
+      district: doc.district,
+      city: doc.city,
+      // keep the full message but avoid sending extremely large payloads
+      message: typeof doc.message === 'string' ? doc.message : doc.message,
+      createdAt: doc.createdAt,
+      // indicate presence of signature without sending the image data
+      signaturePresent: !!doc.signature,
+    }
+
+    return NextResponse.json(resp, { status: 201, headers: corsHeaders })
   } catch (err) {
     console.error(err)
     return NextResponse.json({ error: 'Server error' }, { status: 500, headers: corsHeaders })

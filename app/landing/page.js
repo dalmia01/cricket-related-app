@@ -95,7 +95,13 @@ export default function LandingPage() {
   const toastTimerRef = useRef(null)
   const TOAST_MS = 2000
 
-  const messages = ['Great service', 'Thank you!', 'Amazing!', 'Proud supporter', 'Best wishes']
+  const messages = [
+    'Best wishes Team India — play bold, play proud 💙',
+    'Good luck Team India! Make the nation proud 🇮🇳',
+    'T20 World Cup mode ON. Go Team India! 🔥',
+    'Let the blue roar! All the best Team India 🇮🇳',
+    'Game on! Best wishes to Team India 🏏🔥'
+  ]
 
   async function handleProceed() {
     if (!signature) return alert('Please sign in the box')
