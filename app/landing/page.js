@@ -93,7 +93,7 @@ export default function LandingPage() {
   const [toastVisible, setToastVisible] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const toastTimerRef = useRef(null)
-  const TOAST_MS = 2000
+  const TOAST_MS = 500
 
   const messages = [
     'Best wishes Team India — play bold, play proud 💙',
