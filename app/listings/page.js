@@ -116,7 +116,7 @@ export default function ListingsPage() {
         <div style={{display: 'inline-block', padding: '6px 12px', borderRadius: 999, background: '#f1f5f9', color: '#475569', fontSize: 12}}>Signatures</div>
         <h1 style={{fontSize: 40, margin: '18px 0 8px', lineHeight: 1.1}}>Signatures Wall</h1>
         <p style={{color: '#6b7280', maxWidth: 860, margin: '0 auto'}}>A cozy place for visitors to leave their mark — browse messages and names.</p>
-        <div style={{marginTop:8, color:'#94a3b8'}}>{filtered.length} result{filtered.length !== 1 ? 's' : ''}</div>
+        <div style={{marginTop:8, color:'#94a3b8'}}>{total} result{total !== 1 ? 's' : ''}</div>
       </div>
 
       <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:32,flexWrap:'wrap',justifyContent:'center'}}>
