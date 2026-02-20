@@ -95,12 +95,19 @@ export default function LandingPage() {
   const toastTimerRef = useRef(null)
   const TOAST_MS = 500
 
+  // const messages = [
+  //   'Best wishes Team India — play bold, play proud 💙',
+  //   'Good luck Team India! Make the nation proud 🇮🇳',
+  //   'T20 World Cup mode ON. Go Team India! 🔥',
+  //   'Let the blue roar! All the best Team India 🇮🇳',
+  //   'Game on! Best wishes to Team India 🏏🔥'
+  // ]
+
   const messages = [
-    'Best wishes Team India — play bold, play proud 💙',
-    'Good luck Team India! Make the nation proud 🇮🇳',
-    'T20 World Cup mode ON. Go Team India! 🔥',
-    'Let the blue roar! All the best Team India 🇮🇳',
-    'Game on! Best wishes to Team India 🏏🔥'
+    'Play hard, play fair — Super 8 glory awaits! 🏆',
+    'Wishing both teams a thrilling Super 8 showdown! 🔥',
+    'Here’s to big hits, great wickets, and unforgettable moments! 🌟',
+    'May this New Zealand vs Pakistan clash be a cracker of a match! 💥',
   ]
 
   async function handleProceed() {
