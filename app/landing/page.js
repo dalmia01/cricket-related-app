@@ -88,7 +88,13 @@ export default function LandingPage() {
   const [selectedState, setSelectedState] = useState('')
   const [signature, setSignature] = useState(null)
   const signatureRef = useRef(null)
-  const [message, setMessage] = useState('Best wishes Team India — play bold, play proud 💙')
+  const messages = [
+    'Play hard, play fair — Super 8 glory awaits! 🏆',
+    'Wishing both teams a thrilling Super 8 showdown! 🔥',
+    'Here’s to big hits, great wickets, and unforgettable moments! 🌟',
+    'May this New Zealand vs Pakistan clash be a cracker of a match! 💥',
+  ]
+  const [message, setMessage] = useState(messages[0])
   const [loading, setLoading] = useState(false)
   const [toastVisible, setToastVisible] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
@@ -103,12 +109,7 @@ export default function LandingPage() {
   //   'Game on! Best wishes to Team India 🏏🔥'
   // ]
 
-  const messages = [
-    'Play hard, play fair — Super 8 glory awaits! 🏆',
-    'Wishing both teams a thrilling Super 8 showdown! 🔥',
-    'Here’s to big hits, great wickets, and unforgettable moments! 🌟',
-    'May this New Zealand vs Pakistan clash be a cracker of a match! 💥',
-  ]
+  
 
   async function handleProceed() {
     if (!signature) return alert('Please sign in the box')
