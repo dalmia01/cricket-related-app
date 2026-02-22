@@ -95,9 +95,9 @@ export default function LandingPage() {
   //   'May this New Zealand vs Pakistan clash be a cracker of a match! 💥',
   // ];
   const messages = [
+    'T20 World Cup mode ON. Go Team India! 🔥',
     'Best wishes Team India — play bold, play proud 💙',
     'Good luck Team India! Make the nation proud 🇮🇳',
-    'T20 World Cup mode ON. Go Team India! 🔥',
     'Let the blue roar! All the best Team India 🇮🇳',
     'Game on! Best wishes to Team India 🏏🔥'
   ]
