@@ -46,41 +46,46 @@ export async function POST(request) {
       const { PUSHER_APP_ID, PUSHER_KEY, PUSHER_SECRET, PUSHER_CLUSTER, NODE_ENV, VERCEL_ENV } = process.env
       const isProd = NODE_ENV === 'production' || VERCEL_ENV === 'production'
       if (isProd && PUSHER_APP_ID && PUSHER_KEY && PUSHER_SECRET) {
-        try {
-          const PusherModule = await import('pusher')
-          const Pusher = PusherModule && (PusherModule.default || PusherModule)
-          const pusher = new Pusher({
-            appId: PUSHER_APP_ID,
-            key: PUSHER_KEY,
-            secret: PUSHER_SECRET,
-            cluster: PUSHER_CLUSTER,
-            useTLS: true,
-          })
-          // trigger a simple public event on channel 'signatures'
-          // avoid sending large base64 `signature` data to Pusher (causes 413)
-          const payload = {
-            name: doc.name,
-            phone: doc.phone ? String(doc.phone).slice(0, 32) : undefined,
-            state: doc.state,
-            district: doc.district,
-            city: doc.city,
-            // truncate message to keep payload small
-            message: typeof doc.message === 'string' ? doc.message.slice(0, 400) : doc.message,
-            createdAt: doc.createdAt,
-            // let clients know a signature image exists without sending it
-            signaturePresent: !!doc.signature,
-          }
+        // Fire-and-forget: perform import + trigger asynchronously so we don't block the HTTP response.
+        ;(async () => {
+          try {
+            const PusherModule = await import('pusher')
+            const Pusher = PusherModule && (PusherModule.default || PusherModule)
+            const pusher = new Pusher({
+              appId: PUSHER_APP_ID,
+              key: PUSHER_KEY,
+              secret: PUSHER_SECRET,
+              cluster: PUSHER_CLUSTER,
+              useTLS: true,
+            })
 
-          await pusher.trigger('signatures', 'created', payload)
-        } catch (impErr) {
-          console.error('Pusher import/trigger error', impErr)
-        }
+            // trigger a simple public event on channel 'signatures'
+            // avoid sending large base64 `signature` data to Pusher (causes 413)
+            const payload = {
+              name: doc.name,
+              phone: doc.phone ? String(doc.phone).slice(0, 32) : undefined,
+              state: doc.state,
+              district: doc.district,
+              city: doc.city,
+              // truncate message to keep payload small
+              message: typeof doc.message === 'string' ? doc.message.slice(0, 400) : doc.message,
+              createdAt: doc.createdAt,
+              // let clients know a signature image exists without sending it
+              signaturePresent: !!doc.signature,
+            }
+
+            // don't await here; log errors if the trigger fails
+            pusher.trigger('signatures', 'created', payload).catch(err => console.error('Pusher trigger error', err))
+          } catch (impErr) {
+            console.error('Pusher import/trigger error', impErr)
+          }
+        })()
       } else {
         console.warn('Skipping Pusher trigger: either not in production or Pusher env vars missing')
       }
     } catch (triggerErr) {
-      // don't fail the request if realtime notify fails; log for debugging
-      console.error('Pusher trigger error', triggerErr)
+      // don't fail the request if realtime notify setup fails; log for debugging
+      console.error('Pusher trigger initialization error', triggerErr)
     }
 
     // Return only selected fields to reduce payload size
