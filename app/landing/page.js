@@ -89,10 +89,10 @@ export default function LandingPage() {
   const [signature, setSignature] = useState(null)
   const signatureRef = useRef(null)
   const messages = [
+    'Here’s to big hits, great wickets, and unforgettable moments! 🌟',
     'Play hard, play fair — Super 8 glory awaits! 🏆',
     'Wishing both teams a thrilling Super 8 showdown! 🔥',
-    'Here’s to big hits, great wickets, and unforgettable moments! 🌟',
-    'May this Zimbabwe vs West Indies clash be a cracker of a match! 💥',
+    'May this England vs Pakistan clash be a cracker of a match! 💥',
   ];
   // const messages = [
   //   'T20 World Cup mode ON. Go Team India! 🔥',
