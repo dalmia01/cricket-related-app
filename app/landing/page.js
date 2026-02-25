@@ -92,7 +92,7 @@ export default function LandingPage() {
     'Here’s to big hits, great wickets, and unforgettable moments! 🌟',
     'Play hard, play fair — Super 8 glory awaits! 🏆',
     'Wishing both teams a thrilling Super 8 showdown! 🔥',
-    'May this England vs Pakistan clash be a cracker of a match! 💥',
+    'May this Sri Lanka vs New Zealand clash be a cracker of a match! 💥',
   ];
   // const messages = [
   //   'T20 World Cup mode ON. Go Team India! 🔥',
