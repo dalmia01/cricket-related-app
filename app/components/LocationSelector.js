@@ -97,7 +97,7 @@ export default function LocationSelector({ value, onChange, autoSelect = true })
         <div style={{ color: "#94a3b8", fontSize: 13 }}>Choose a state first</div>
       )}
 
-      <label style={{ display: "block", marginTop: 8, marginBottom: 8 }}>City</label>
+      <label style={{ display: "block", marginTop: 8, marginBottom: 8 }}>Location</label>
       {selectedDistrict ? (
         <>
           <select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} style={{ width: "100%" }}>
