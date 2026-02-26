@@ -88,19 +88,19 @@ export default function LandingPage() {
   const [selectedState, setSelectedState] = useState('')
   const [signature, setSignature] = useState(null)
   const signatureRef = useRef(null)
-  const messages = [
-    'Here’s to big hits, great wickets, and unforgettable moments! 🌟',
-    'Play hard, play fair — Super 8 glory awaits! 🏆',
-    'Wishing both teams a thrilling Super 8 showdown! 🔥',
-    'May this Sri Lanka vs New Zealand clash be a cracker of a match! 💥',
-  ];
   // const messages = [
-  //   'T20 World Cup mode ON. Go Team India! 🔥',
-  //   'Best wishes Team India — play bold, play proud 💙',
-  //   'Good luck Team India! Make the nation proud 🇮🇳',
-  //   'Let the blue roar! All the best Team India 🇮🇳',
-  //   'Game on! Best wishes to Team India 🏏🔥'
-  // ]
+  //   'Here’s to big hits, great wickets, and unforgettable moments! 🌟',
+  //   'Play hard, play fair — Super 8 glory awaits! 🏆',
+  //   'Wishing both teams a thrilling Super 8 showdown! 🔥',
+  //   'May this Sri Lanka vs New Zealand clash be a cracker of a match! 💥',
+  // ];
+  const messages = [
+    'Let the blue roar! All the best Team India 🇮🇳',
+    'T20 World Cup mode ON. Go Team India! 🔥',
+    'Best wishes Team India — play bold, play proud 💙',
+    'Good luck Team India! Make the nation proud 🇮🇳',
+    'Game on! Best wishes to Team India 🏏🔥'
+  ]
   const [message, setMessage] = useState(messages[0])
   const [loading, setLoading] = useState(false)
   const [toastVisible, setToastVisible] = useState(false)
