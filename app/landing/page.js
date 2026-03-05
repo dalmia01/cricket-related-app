@@ -94,12 +94,16 @@ export default function LandingPage() {
   //   'Wishing both teams a thrilling Super 8 showdown! 🔥',
   // ];
   const messages = [
-    'Game on! Best wishes to Team India 🏏🔥',
-    'Let the blue roar! All the best Team India 🇮🇳',
-    'T20 World Cup mode ON. Go Team India! 🔥',
-    'Best wishes Team India — play bold, play proud 💙',
-    'Good luck Team India! Make the nation proud 🇮🇳',
-    
+    'Semi-final showdown! Let’s go India 🇮🇳🔥',
+  'IND vs ENG — Time to dominate 💪🏏',
+  'One step from the final. Go Blue! 💙',
+  'Roar India! Finals loading... 🔥',
+  'England beware — India’s here 🇮🇳',
+  'Knockout mode ON. Finish strong! 💥',
+  'Bleed Blue. Beat England 💙',
+  'Semi-final energy. Champion mindset 🏆',
+  'Play bold. Seal the final spot 🔥',
+  'History awaits. Let’s do this India! 🇮🇳'
   ]
   const [message, setMessage] = useState(messages[0])
   const [loading, setLoading] = useState(false)
