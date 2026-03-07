@@ -94,16 +94,16 @@ export default function LandingPage() {
   //   'Wishing both teams a thrilling Super 8 showdown! 🔥',
   // ];
   const messages = [
-    'Semi-final showdown! Let’s go India 🇮🇳🔥',
-  'IND vs ENG — Time to dominate 💪🏏',
-  'One step from the final. Go Blue! 💙',
-  'Roar India! Finals loading... 🔥',
-  'England beware — India’s here 🇮🇳',
-  'Knockout mode ON. Finish strong! 💥',
-  'Bleed Blue. Beat England 💙',
-  'Semi-final energy. Champion mindset 🏆',
-  'Play bold. Seal the final spot 🔥',
-  'History awaits. Let’s do this India! 🇮🇳'
+     'Finals time! Let’s bring it home 🇮🇳🏆',
+  'IND vs NZ — One last push! 🔥',
+  'Bleed Blue. Lift the Cup 💙🏆',
+  'The final battle. Go India! 🇮🇳',
+  'One match. One dream. 🇮🇳🏆',
+  'Roar India! Trophy time 🔥',
+  'Finish it in style, Team India 💙',
+  'All eyes on the Cup 🇮🇳🏆',
+  'Champions loading... 🔥',
+  'Make history tonight 🇮🇳🏏'
   ]
   const [message, setMessage] = useState(messages[0])
   const [loading, setLoading] = useState(false)
