@@ -11,6 +11,8 @@ export default function ListingsPage() {
   const [page, setPage] = useState(1)
   const [limit] = useState(12)
   const [total, setTotal] = useState(0)
+  const [availableDates, setAvailableDates] = useState([])
+  const [selectedDate, setSelectedDate] = useState('')
   const [loading, setLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
@@ -35,6 +37,7 @@ export default function ListingsPage() {
       if (selectedFilter.city) params.set('city', selectedFilter.city)
       if (search) params.set('search', search)
       if (sort) params.set('sort', sort)
+      if (selectedDate) params.set('date', selectedDate)
 
       const res = await fetch(`/api/signatures?${params.toString()}`)
       const json = await res.json()
@@ -52,12 +55,34 @@ export default function ListingsPage() {
       setLoading(false)
       setLoadingMore(false)
     }
-  }, [limit, search, selectedFilter, sort])
+  }, [limit, search, selectedFilter, sort, selectedDate])
+
+  // fetch available dates (latest first) and set default
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const res = await fetch('/api/signatures/dates')
+        if (!res.ok) return
+        const json = await res.json()
+        const dates = json.dates || []
+        if (!mounted) return
+        setAvailableDates(dates)
+        if (dates.length > 0) {
+          // default to latest (first in array)
+          setSelectedDate(dates[0])
+        }
+      } catch (e) {
+        console.error('Failed to load signature dates', e)
+      }
+    })()
+    return () => { mounted = false }
+  }, [])
 
   // load (and reload) when filters/search/sort change
   useEffect(() => {
     fetchPage(1, true)
-  }, [search, sort, selectedFilter, fetchPage])
+  }, [search, sort, selectedFilter, selectedDate, fetchPage])
 
   // debounce query -> search
   useEffect(() => {
@@ -117,11 +142,26 @@ export default function ListingsPage() {
         <h1 style={{fontSize: 40, margin: '18px 0 8px', lineHeight: 1.1}}>Signatures Wall</h1>
         <p style={{color: '#6b7280', maxWidth: 860, margin: '0 auto'}}>A cozy place for visitors to leave their mark — browse messages and names.</p>
         <div style={{marginTop:8, color:'#94a3b8'}}>{total} result{total !== 1 ? 's' : ''}</div>
+        
       </div>
 
       <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:32,flexWrap:'wrap',justifyContent:'center'}}>
-        <div style={{minWidth:"80vw"}}>
+        <div style={{minWidth:"50vw"}}>
           <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search name or message" style={{width:'100%',padding:'12px',borderRadius:12,border:'1px solid #e6edf3'}} />
+        </div>
+        <div>
+          <select value={selectedDate} onChange={e => setSelectedDate(e.target.value)} style={{width:'100%',padding:12,borderRadius:8,border:'1px solid #e6edf3'}}>
+            {availableDates.length === 0 ? (
+              <option value="">Latest</option>
+            ) : (
+              availableDates.map(d => {
+                // display human friendly date
+                const dt = new Date(d)
+                const label = dt.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+                return <option key={d} value={d}>{label}</option>
+              })
+            )}
+          </select>
         </div>
       </div>
 

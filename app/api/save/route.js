@@ -21,6 +21,7 @@ export async function OPTIONS() {
 // Region hints removed; set platform-specific regions in deployment settings if needed.
 
 export async function POST(request) {
+  return;
   try {
     const body = await request.json()
     const { name, phone, state, district, city, message, signature } = body || {}
