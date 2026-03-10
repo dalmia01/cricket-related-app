@@ -168,14 +168,13 @@ export default function ListingsPage() {
                 })
               )}
             </select>
-            {loading ? <div className="spinner" style={{width:18,height:18}} aria-hidden /> : null}
           </div>
         </div>
       </div>
 
       {loading && items.length === 0 ? (
         <div style={{display:'flex',justifyContent:'center',padding:40}}>
-          <div className="spinner" aria-hidden></div>
+        
         </div>
       ) : filtered.length === 0 ? (
         <div className="empty-state card">
