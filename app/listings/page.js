@@ -137,6 +137,11 @@ export default function ListingsPage() {
 
   return (
     <main style={{padding: '26px 20px', maxWidth: 1200, margin: '0 auto'}}>
+      {loading ? (
+        <div style={{position:'fixed',inset:0,background:'rgba(255,255,255,0.6)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}} aria-hidden>
+          <div className="spinner" aria-hidden style={{width:48,height:48}} />
+        </div>
+      ) : null}
       <div style={{textAlign: 'center', marginBottom: 28}}>
         <div style={{display: 'inline-block', padding: '6px 12px', borderRadius: 999, background: '#f1f5f9', color: '#475569', fontSize: 12}}>Signatures</div>
         <h1 style={{fontSize: 40, margin: '18px 0 8px', lineHeight: 1.1}}>Signatures Wall</h1>
@@ -147,21 +152,24 @@ export default function ListingsPage() {
 
       <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:32,flexWrap:'wrap',justifyContent:'center'}}>
         <div style={{minWidth:"50vw"}}>
-          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search name or message" style={{width:'100%',padding:'12px',borderRadius:12,border:'1px solid #e6edf3'}} />
+          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search name or message" disabled={loading} style={{width:'100%',padding:'12px',borderRadius:12,border:'1px solid #e6edf3',opacity: loading ? 0.7 : 1}} />
         </div>
-        <div>
-          <select value={selectedDate} onChange={e => setSelectedDate(e.target.value)} style={{width:'100%',padding:12,borderRadius:8,border:'1px solid #e6edf3'}}>
-            {availableDates.length === 0 ? (
-              <option value="">Latest</option>
-            ) : (
-              availableDates.map(d => {
-                // display human friendly date
-                const dt = new Date(d)
-                const label = dt.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-                return <option key={d} value={d}>{label}</option>
-              })
-            )}
-          </select>
+        <div style={{minWidth:160}}>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <select value={selectedDate} onChange={e => setSelectedDate(e.target.value)} disabled={loading} style={{width:'100%',padding:12,borderRadius:8,border:'1px solid #e6edf3',opacity: loading ? 0.7 : 1}}>
+              {availableDates.length === 0 ? (
+                <option value="">Latest</option>
+              ) : (
+                availableDates.map(d => {
+                  // display human friendly date
+                  const dt = new Date(d)
+                  const label = dt.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+                  return <option key={d} value={d}>{label}</option>
+                })
+              )}
+            </select>
+            {loading ? <div className="spinner" style={{width:18,height:18}} aria-hidden /> : null}
+          </div>
         </div>
       </div>
 

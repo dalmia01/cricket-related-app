@@ -19,19 +19,27 @@ export async function GET() {
     await dbConnect()
     const db = mongoose.connection.db
     const cols = await db.listCollections().toArray()
-    const dates = cols
-      .map(c => c.name)
-      .filter(name => /^signatures_\d{2}-\d{2}-\d{4}$/.test(name))
-      .map(name => {
-        const m = name.match(/^signatures_(\d{2})-(\d{2})-(\d{4})$/)
-        if (!m) return null
-        const dd = m[1]
-        const mm = m[2]
-        const yyyy = m[3]
-        // produce ISO-like YYYY-MM-DD (local date)
-        return `${yyyy}-${mm}-${dd}`
-      })
-      .filter(Boolean)
+    // filter to only signature collections and include only those with at least one document
+    const candidateNames = cols.map(c => c.name).filter(name => /^signatures_\d{2}-\d{2}-\d{4}$/.test(name))
+
+    const dates = []
+    for (const name of candidateNames) {
+      try {
+        const count = await db.collection(name).countDocuments()
+        if (count > 0) {
+          const m = name.match(/^signatures_(\d{2})-(\d{2})-(\d{4})$/)
+          if (!m) continue
+          const dd = m[1]
+          const mm = m[2]
+          const yyyy = m[3]
+          dates.push(`${yyyy}-${mm}-${dd}`)
+        }
+      } catch (e) {
+        // ignore collections we can't inspect
+        console.error('Error counting collection', name, e)
+      }
+    }
+
     // dedupe & sort descending (latest first)
     const uniq = Array.from(new Set(dates)).sort((a, b) => (a < b ? 1 : -1))
 
